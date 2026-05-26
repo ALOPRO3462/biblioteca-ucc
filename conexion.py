@@ -14,5 +14,6 @@ conexion = pyodbc.connect(
 
     'Encrypt=yes;'
     'TrustServerCertificate=yes;'
+    'Connection Timeout=30;'
 
 )
