@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<h1 class="mb-4">
+
+    <i class="bi bi-people"></i>
+
+    Gestión de Estudiantes
+
+</h1>
+
+<form
+    action="/agregar_estudiante"
+    method="POST"
+    class="card p-4 mb-4 shadow"
+>
+
+    <div class="row g-3">
+
+        <div class="col-md-3">
+
+            <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+        <div class="col-md-2">
+
+            <input
+                type="text"
+                name="cedula"
+                placeholder="Cedula"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+        <div class="col-md-3">
+
+            <input
+                type="email"
+                name="correo"
+                placeholder="Correo"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+        <div class="col-md-2">
+
+            <input
+                type="text"
+                name="carrera"
+                placeholder="Carrera"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100"
+            >
+
+                <i class="bi bi-floppy"></i>
+
+                Guardar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+<table class="table table-bordered table-hover bg-white shadow">
+
+    <thead class="table-dark">
+
+        <tr>
+
+            <th>Nombre</th>
+            <th>Cedula</th>
+            <th>Correo</th>
+            <th>Carrera</th>
+            <th>Acciones</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for estudiante in estudiantes %}
+
+        <tr>
+
+            <td>{{ estudiante.nombre }}</td>
+
+            <td>
+
+                <span class="badge bg-secondary">
+
+                    {{ estudiante.cedula }}
+
+                </span>
+
+            </td>
+
+            <td>{{ estudiante.correo }}</td>
+
+            <td>{{ estudiante.carrera }}</td>
+
+            <td>
+
+                <a
+                    href="/eliminar_estudiante/{{ estudiante.id_estudiante }}"
+                    class="btn btn-danger btn-sm"
+
+                    onclick="return confirm('¿Eliminar estudiante?')"
+                >
+
+                    <i class="bi bi-trash"></i>
+
+                    Eliminar
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

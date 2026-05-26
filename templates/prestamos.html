@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<h1 class="mb-4">
+
+    <i class="bi bi-journal-check"></i>
+
+    Gestión de Prestamos
+
+</h1>
+
+{% if error == 'maximo' %}
+
+    <div class="alert alert-danger">
+
+        El estudiante ya tiene 3 prestamos activos
+
+    </div>
+
+{% endif %}
+
+{% if error == 'stock' %}
+
+    <div class="alert alert-danger">
+
+        El libro no tiene stock disponible
+
+    </div>
+
+{% endif %}
+
+<form
+    action="/agregar_prestamo"
+    method="POST"
+    class="card p-4 mb-4 shadow"
+>
+
+    <div class="row g-3">
+
+        <div class="col-md-5">
+
+            <select
+                name="id_estudiante"
+                class="form-select"
+                required
+            >
+
+                <option value="">
+                    Seleccione estudiante
+                </option>
+
+                {% for estudiante in estudiantes %}
+
+                    <option value="{{ estudiante.id_estudiante }}">
+
+                        {{ estudiante.cedula }}
+                        -
+                        {{ estudiante.nombre }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <div class="col-md-5">
+
+            <select
+                name="id_libro"
+                class="form-select"
+                required
+            >
+
+                <option value="">
+                    Seleccione libro
+                </option>
+
+                {% for libro in libros %}
+
+                    {% if libro.stock > 0 %}
+
+                        <option value="{{ libro.id_libro }}">
+
+                            {{ libro.titulo }}
+                            (Stock: {{ libro.stock }})
+
+                        </option>
+
+                    {% else %}
+
+                        <option disabled>
+
+                            {{ libro.titulo }}
+                            - No disponible
+
+                        </option>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100"
+            >
+
+                <i class="bi bi-plus-circle"></i>
+
+                Registrar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-dark text-white">
+
+                <i class="bi bi-bookmark-check"></i>
+
+                Prestamos Activos
+
+            </div>
+
+            <div class="card-body">
+
+                <ul class="list-group">
+
+                    {% for prestamo in prestamos_activos %}
+
+                        <li class="list-group-item">
+
+                            <strong>
+
+                                {{ prestamo.cedula }}
+
+                            </strong>
+
+                            -
+                            {{ prestamo.estudiante }}
+
+                            <br>
+
+                            {{ prestamo.libro }}
+
+                            <br><br>
+
+                            <a
+                                href="/devolver_prestamo/{{ prestamo.id_prestamo }}"
+                                class="btn btn-success btn-sm"
+
+                                onclick="return confirm('¿Confirmar devolución del libro?')"
+                            >
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Devolver
+
+                            </a>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-secondary text-white">
+
+                <i class="bi bi-clock-history"></i>
+
+                Historial
+
+            </div>
+
+            <div class="card-body">
+
+                <ul class="list-group">
+
+                    {% for prestamo in prestamos_devueltos %}
+
+                        <li class="list-group-item">
+
+                            <strong>
+
+                                {{ prestamo.cedula }}
+
+                            </strong>
+
+                            -
+                            {{ prestamo.estudiante }}
+
+                            <br>
+
+                            {{ prestamo.libro }}
+
+                            <br>
+
+                            <span class="badge bg-success">
+
+                                Devuelto
+
+                            </span>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
