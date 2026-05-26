@@ -1,10 +1,18 @@
 import pyodbc
 
 conexion = pyodbc.connect(
-    'DRIVER={SQL Server};'
-    'SERVER=.\\SQLEXPRESS;'
-    'DATABASE=biblioteca_ucc;'
-    'Trusted_Connection=yes;'
-)
 
-print("Conexion exitosa")
+    'DRIVER={ODBC Driver 17 for SQL Server};'
+
+    'SERVER=biblioteca-kevin-server.database.windows.net;'
+
+    'DATABASE=biblioteca_ucc;'
+
+    'UID=adminbiblioteca;'
+
+    'PWD=Panda3462.13;'
+
+    'Encrypt=yes;'
+    'TrustServerCertificate=yes;'
+
+)
