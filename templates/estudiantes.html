@@ -4,6 +4,41 @@
 
 <h1 class="mb-4">
 
+    {% if error == 'prestamos' %}
+
+        <div class="alert alert-danger p-2 mb-3">
+
+            No se puede eliminar el estudiante
+            porque tiene prestamos registrados.
+
+        </div>
+
+    {% endif %}
+
+    <form method="GET" class="mb-4">
+
+        <div class="row">
+            <div class="col-md-10">
+                <input
+                    type="text"
+                    name="buscar"
+                    value="{{ buscar }}"
+                    placeholder="Buscar estudiante por nombre o cedula"
+                    class="form-control"
+                >
+            </div>
+            <div class="col-md-2">
+                <button
+                    type="submit"
+                    class="btn btn-dark w-100"
+                >
+                    <i class="bi bi-search"></i>
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
     <i class="bi bi-people"></i>
 
     Gestión de Estudiantes
@@ -23,7 +58,7 @@
             <input
                 type="text"
                 name="nombre"
-                placeholder="Nombre"
+                placeholder="Nombre Completo"
                 class="form-control"
                 required
             >
@@ -37,6 +72,8 @@
                 name="cedula"
                 placeholder="Cedula"
                 class="form-control"
+                minlength="9"
+                maxlength="9"
                 required
             >
 
@@ -72,80 +109,48 @@
                 type="submit"
                 class="btn btn-primary w-100"
             >
-
                 <i class="bi bi-floppy"></i>
-
                 Guardar
-
             </button>
-
         </div>
-
     </div>
-
 </form>
 
 <table class="table table-bordered table-hover bg-white shadow">
-
     <thead class="table-dark">
-
         <tr>
-
             <th>Nombre</th>
             <th>Cedula</th>
             <th>Correo</th>
             <th>Carrera</th>
             <th>Acciones</th>
-
         </tr>
-
     </thead>
 
     <tbody>
-
         {% for estudiante in estudiantes %}
-
         <tr>
-
             <td>{{ estudiante.nombre }}</td>
-
             <td>
-
                 <span class="badge bg-secondary">
-
                     {{ estudiante.cedula }}
-
                 </span>
-
             </td>
-
             <td>{{ estudiante.correo }}</td>
-
             <td>{{ estudiante.carrera }}</td>
-
             <td>
-
                 <a
                     href="/eliminar_estudiante/{{ estudiante.id_estudiante }}"
                     class="btn btn-danger btn-sm"
-
                     onclick="return confirm('¿Eliminar estudiante?')"
                 >
-
                     <i class="bi bi-trash"></i>
-
                     Eliminar
-
                 </a>
-
             </td>
-
         </tr>
-
         {% endfor %}
-
     </tbody>
-
 </table>
 
 {% endblock %}

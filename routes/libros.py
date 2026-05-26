@@ -8,11 +8,15 @@ def inicio():
 
     cursor = conexion.cursor()
 
+    buscar = request.args.get('buscar', '')
+
     # OBTENER LIBROS
 
     cursor.execute("""
-        SELECT * FROM libros
-    """)
+        SELECT *
+        FROM libros
+        WHERE titulo LIKE ?
+    """, ('%' + buscar + '%',))
 
     libros = cursor.fetchall()
 
@@ -54,9 +58,35 @@ def inicio():
 
     libros_disponibles = cursor.fetchone()
 
+    # PRESTAMOS VENCIDOS
+
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM prestamos
+        WHERE estado = 'Activo'
+        AND fecha_limite < GETDATE()
+    """)
+
+    prestamos_vencidos = cursor.fetchone()
+
+    # LIBRO MAS PRESTADO
+
+    cursor.execute("""
+        SELECT TOP 1
+            l.titulo,
+            COUNT(*) AS total
+        FROM prestamos p
+        INNER JOIN libros l
+        ON p.id_libro = l.id_libro
+        GROUP BY l.titulo
+        ORDER BY total DESC
+    """)
+
+    top_libro = cursor.fetchone()
+
     error = request.args.get('error')
 
-    return render_template('index.html',libros=libros,error=error,total_libros=total_libros,total_estudiantes=total_estudiantes,prestamos_activos=prestamos_activos,libros_disponibles=libros_disponibles)
+    return render_template('index.html',libros=libros,error=error,total_libros=total_libros,total_estudiantes=total_estudiantes,prestamos_activos=prestamos_activos,libros_disponibles=libros_disponibles,buscar=buscar,prestamos_vencidos=prestamos_vencidos,top_libro=top_libro)
 
 @libros_bp.route('/agregar_libro', methods=['POST'])
 def agregar_libro():
@@ -83,31 +113,22 @@ def eliminar_libro(id):
     cursor = conexion.cursor()
 
     # validar prestamos activos
-
     cursor.execute("""
-
         SELECT COUNT(*) AS total
-
         FROM prestamos
-
         WHERE id_libro = ?
         AND estado = 'Activo'
-
     """, (id))
 
     prestamos = cursor.fetchone()
 
     if prestamos.total > 0:
-
         return redirect('/?error=prestamo_activo')
 
     # eliminar libro
-
     cursor.execute("""
-
         DELETE FROM libros
         WHERE id_libro = ?
-
     """, (id))
 
     conexion.commit()
@@ -144,3 +165,44 @@ def editar_libro(id):
     libro = cursor.fetchone()
 
     return render_template('editar.html', libro=libro)
+
+@libros_bp.route('/reporte')
+def reporte():
+
+    cursor = conexion.cursor()
+
+    # LIBROS
+    cursor.execute("""
+        SELECT * FROM libros
+    """)
+    libros = cursor.fetchall()
+
+    # ESTUDIANTES
+    cursor.execute("""
+        SELECT * FROM estudiantes
+    """)
+    estudiantes = cursor.fetchall()
+
+    # PRESTAMOS
+    cursor.execute("""
+        SELECT
+            e.nombre AS estudiante,
+            e.cedula,
+            l.titulo AS libro,
+            p.estado,
+            p.fecha_prestamo,
+            p.fecha_limite
+        FROM prestamos p
+        INNER JOIN estudiantes e
+        ON p.id_estudiante = e.id_estudiante
+        INNER JOIN libros l
+        ON p.id_libro = l.id_libro
+    """)
+
+    prestamos = cursor.fetchall()
+    return render_template(
+        'reporte.html',
+        libros=libros,
+        estudiantes=estudiantes,
+        prestamos=prestamos
+    )

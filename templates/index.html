@@ -9,92 +9,110 @@
 <!-- ALERTA -->
 
 {% if error %}
-
     <div class="alert alert-danger">
-
         No se puede eliminar el libro
         porque tiene préstamos activos.
-
     </div>
-
 {% endif %}
 
 <!-- DASHBOARD -->
 
 <div class="row mb-4">
-
     <div class="col-md-3">
-
         <div class="card text-center shadow">
-
             <div class="card-body">
-
                 <h5>Total Libros</h5>
-
                 <h2>
                     {{ total_libros.total }}
                 </h2>
-
             </div>
-
         </div>
-
     </div>
 
     <div class="col-md-3">
-
         <div class="card text-center shadow">
-
             <div class="card-body">
-
                 <h5>Estudiantes</h5>
-
                 <h2>
                     {{ total_estudiantes.total }}
                 </h2>
-
             </div>
-
         </div>
-
     </div>
 
     <div class="col-md-3">
-
         <div class="card text-center shadow">
-
             <div class="card-body">
-
                 <h5>Prestamos Activos</h5>
-
                 <h2>
                     {{ prestamos_activos.total }}
                 </h2>
-
             </div>
-
         </div>
-
     </div>
 
     <div class="col-md-3">
-
         <div class="card text-center shadow">
-
             <div class="card-body">
-
                 <h5>Libros Disponibles</h5>
-
                 <h2>
                     {{ libros_disponibles.total }}
                 </h2>
-
             </div>
+        </div>
+    </div>
+</div>
 
+<form method="GET" class="mb-4">
+    <div class="row">
+        <div class="col-md-10">
+            <input
+                type="text"
+                name="buscar"
+                value="{{ buscar }}"
+                placeholder="Buscar libro por titulo"
+                class="form-control"
+            >
         </div>
 
+        <div class="col-md-2">
+            <button
+                type="submit"
+                class="btn btn-dark w-100"
+            >
+                <i class="bi bi-search"></i>
+                Buscar
+            </button>
+        </div>
     </div>
+</form>
 
+<div class="col-md-3">
+    <div class="card text-center shadow border-danger">
+        <div class="card-body">
+            <h5>
+                <i class="bi bi-exclamation-triangle"></i>
+                Prestamos Vencidos
+            </h5>
+            <h2>
+                {{ prestamos_vencidos.total }}
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <h4>
+            <i class="bi bi-trophy"></i>
+            Libro más prestado
+        </h4>
+        <p>
+            {{ top_libro.titulo }}
+            -
+            {{ top_libro.total }} prestamos
+        </p>
+    </div>
 </div>
 
 <!-- FORMULARIO -->
@@ -106,9 +124,7 @@
 >
 
     <div class="row">
-
         <div class="col-md-4">
-
             <input
                 type="text"
                 name="titulo"
@@ -116,11 +132,9 @@
                 class="form-control"
                 required
             >
-
         </div>
 
         <div class="col-md-4">
-
             <input
                 type="text"
                 name="autor"
@@ -151,11 +165,8 @@
             >
                 Guardar
             </button>
-
         </div>
-
     </div>
-
 </form>
 
 <!-- TABLA -->
@@ -181,37 +192,23 @@
         {% for libro in libros %}
 
         <tr>
-
             <td>{{ libro.titulo }}</td>
-
             <td>{{ libro.autor }}</td>
-
             <td>{{ libro.stock }}</td>
 
             <td>
-
                 {% if libro.stock > 0 %}
-
                     <span class="badge bg-success">
-
                         Disponible
-
                     </span>
-
                 {% else %}
-
                     <span class="badge bg-danger">
-
                         No disponible
-
                     </span>
-
                 {% endif %}
-
             </td>
 
             <td>
-
                 <a
                     href="/editar_libro/{{ libro.id_libro }}"
                     class="btn btn-warning btn-sm"
@@ -222,20 +219,14 @@
                 <a
                     href="/eliminar_libro/{{ libro.id_libro }}"
                     class="btn btn-danger btn-sm"
-
                     onclick="return confirm('¿Seguro que deseas eliminar este libro?')"
                 >
                     Eliminar
                 </a>
-
             </td>
-
         </tr>
-
         {% endfor %}
-
     </tbody>
-
 </table>
 
 {% endblock %}

@@ -8,6 +8,7 @@ prestamos_bp = Blueprint('prestamos', __name__)
 def prestamos():
 
     cursor = conexion.cursor()
+    buscar = request.args.get('buscar', '')
 
     # estudiantes
 
@@ -35,6 +36,12 @@ def prestamos():
             e.cedula,
             l.titulo AS libro,
             p.fecha_prestamo,
+            p.fecha_limite,
+            CASE
+                WHEN p.fecha_limite < GETDATE()
+                THEN 'Vencido'
+                ELSE 'En tiempo'
+            END AS estado_tiempo,
             p.estado
 
         FROM prestamos p
@@ -47,7 +54,21 @@ def prestamos():
 
         WHERE p.estado = 'Activo'
 
-    """)
+        AND (
+
+            e.nombre LIKE ?
+            OR e.cedula LIKE ?
+            OR l.titulo LIKE ?
+
+        )
+
+    """, (
+
+        '%' + buscar + '%',
+        '%' + buscar + '%',
+        '%' + buscar + '%'
+
+    ))
 
     prestamos_activos = cursor.fetchall()
 
@@ -89,6 +110,7 @@ def prestamos():
         prestamos_activos=prestamos_activos,
         prestamos_devueltos=prestamos_devueltos,
 
+        buscar=buscar,
         error=error
     )
 
@@ -106,9 +128,7 @@ def agregar_prestamo():
     cursor.execute("""
 
         SELECT COUNT(*) AS total
-
         FROM prestamos
-
         WHERE id_estudiante = ?
         AND estado = 'Activo'
 
@@ -125,9 +145,7 @@ def agregar_prestamo():
     cursor.execute("""
 
         SELECT stock
-
         FROM libros
-
         WHERE id_libro = ?
 
     """, (id_libro))
@@ -143,9 +161,9 @@ def agregar_prestamo():
     cursor.execute("""
 
         INSERT INTO prestamos
-        (id_estudiante, id_libro)
-
-        VALUES (?, ?)
+            (id_estudiante,id_libro,fecha_limite)
+        VALUES
+        (?, ?, DATEADD(DAY, 7, GETDATE()))
 
     """, (id_estudiante, id_libro))
 
@@ -154,9 +172,7 @@ def agregar_prestamo():
     cursor.execute("""
 
         UPDATE libros
-
         SET stock = stock - 1
-
         WHERE id_libro = ?
 
     """, (id_libro))
@@ -176,9 +192,7 @@ def devolver_prestamo(id):
     cursor.execute("""
 
         SELECT id_libro
-
         FROM prestamos
-
         WHERE id_prestamo = ?
 
     """, (id))
@@ -192,10 +206,8 @@ def devolver_prestamo(id):
     cursor.execute("""
 
         UPDATE prestamos
-
         SET estado = 'Devuelto',
             fecha_devolucion = GETDATE()
-
         WHERE id_prestamo = ?
 
     """, (id))
@@ -205,9 +217,7 @@ def devolver_prestamo(id):
     cursor.execute("""
 
         UPDATE libros
-
         SET stock = stock + 1
-
         WHERE id_libro = ?
 
     """, (id_libro))

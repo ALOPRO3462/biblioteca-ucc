@@ -3,12 +3,48 @@
 {% block contenido %}
 
 <h1 class="mb-4">
-
     <i class="bi bi-journal-check"></i>
-
     Gestión de Prestamos
-
 </h1>
+<form method="GET" class="mb-4">
+
+        <div class="row">
+
+            <div class="col-md-10">
+
+                <input
+                    type="text"
+
+                    name="buscar"
+
+                    value="{{ buscar }}"
+
+                    placeholder="Buscar por estudiante, cedula o libro"
+
+                    class="form-control"
+                >
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button
+                    type="submit"
+
+                    class="btn btn-dark w-100"
+                >
+
+                    <i class="bi bi-search"></i>
+
+                    Buscar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
 
 {% if error == 'maximo' %}
 
@@ -160,7 +196,26 @@
 
                             {{ prestamo.libro }}
 
-                            <br><br>
+                            <br>
+
+                            <span class="badge bg-warning text-dark">
+
+                                Limite:
+                                {{ prestamo.fecha_limite }}
+
+                                <br><br>
+
+                                {% if prestamo.estado_tiempo == 'Vencido' %}
+                                    <span class="badge bg-danger">
+                                        ⚠ Vencido
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success">
+                                        En tiempo
+                                    </span>
+                                {% endif %}
+                            </span>
+                            <br>
 
                             <a
                                 href="/devolver_prestamo/{{ prestamo.id_prestamo }}"
